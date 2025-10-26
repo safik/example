@@ -6,7 +6,7 @@ public class SignalGeneratorExperimentRun
         string id,
         int numberOfTrials,
         DateOnly trainingEnd,
-        List<SignalGeneratorTrial> trials,
+        IReadOnlyList<SignalGeneratorTrial> trials,
         ExperimentHyperparameters hyperparameters,
         ExperimentStatus experimentStatus,
         int numberOfCpuCoresRequested

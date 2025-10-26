@@ -90,35 +90,33 @@ public class SignalGeneratorExperimentRunRepository : ISignalGeneratorExperiment
 
     public async Task<Result<SignalGeneratorExperimentRun>> GetAsync(string experimentRunId)
     {
-        var experimentRun = await _connection.QuerySingleOrDefaultAsync<SignalGeneratorExperimentRunDto>(
-            new CommandDefinition(
-                $"""
-                 SELECT number_of_trials, training_end, hyperparameters, number_of_cpu_cores_requested, status
-                 FROM {DbConsts.Orchestration.Schema}.{DbConsts.Orchestration.Tables.SignalGeneratorExperimentRuns}
-                 WHERE id = @experiment_run_id
-                 """,
-                new {experiment_run_id = experimentRunId},
-                cancellationToken: _cancellationToken
-            )
-        );
-        
-        var trials = await _connection.QueryAsync<(string, string)>(
-            new CommandDefinition(
-                $"""
-                 SELECT id, hyperparameters
-                 FROM {DbConsts.Orchestration.Schema}.{DbConsts.Orchestration.Tables.SignalGeneratorTrials}
-                 WHERE signal_generator_experiment_run_id = @experiment_id
-                 """,
-                new {experiment_id = experimentRunId},
-                cancellationToken: _cancellationToken
-            )
-        );
-        
-        return new SignalGeneratorExperimentRun(
-            experimentRunId,
-            experimentRun.NumberOfTrials,
-            DateOnly.FromDateTime(experimentRun.TrainingEnd), 
-            trials
+        try
+        {
+            var experimentRun = await _connection.QuerySingleAsync<SignalGeneratorExperimentRunDto>(
+                new CommandDefinition(
+                    $"""
+                     SELECT number_of_trials, training_end, hyperparameters, number_of_cpu_cores_requested, status
+                     FROM {DbConsts.Orchestration.Schema}.{DbConsts.Orchestration.Tables.SignalGeneratorExperimentRuns}
+                     WHERE id = @experiment_run_id
+                     """,
+                    new {experiment_run_id = experimentRunId},
+                    cancellationToken: _cancellationToken
+                )
+            );
+
+            var trials = await _connection.QueryAsync<(string, string)>(
+                new CommandDefinition(
+                    $"""
+                     SELECT id, hyperparameters
+                     FROM {DbConsts.Orchestration.Schema}.{DbConsts.Orchestration.Tables.SignalGeneratorTrials}
+                     WHERE signal_generator_experiment_run_id = @experiment_id
+                     """,
+                    new {experiment_id = experimentRunId},
+                    cancellationToken: _cancellationToken
+                )
+            );
+
+            var signalGeneratorTrials = trials
                 .Select(t =>
                     {
                         return new SignalGeneratorExperimentRun.SignalGeneratorTrial(
@@ -127,12 +125,26 @@ public class SignalGeneratorExperimentRunRepository : ISignalGeneratorExperiment
                         );
                     }
                 )
-                .ToList(),
-            JsonSerializer.Deserialize<SignalGeneratorExperimentRun.ExperimentHyperparameters>(experimentRun.Hyperparameters, JsonSerializerOptions.Web)
-            ?? throw new InvalidOperationException(),
-            Enum.Parse<SignalGeneratorExperimentRun.ExperimentStatus>(experimentRun.Status),
-            experimentRun.NumberOfCpuCoresRequested
-        );
+                .ToList();
+            
+            return new SignalGeneratorExperimentRun(
+                experimentRunId,
+                experimentRun.NumberOfTrials,
+                DateOnly.FromDateTime(experimentRun.TrainingEnd),
+                signalGeneratorTrials,
+                JsonSerializer.Deserialize<SignalGeneratorExperimentRun.ExperimentHyperparameters>(
+                    experimentRun.Hyperparameters,
+                    JsonSerializerOptions.Web
+                )
+                ?? throw new InvalidOperationException(),
+                Enum.Parse<SignalGeneratorExperimentRun.ExperimentStatus>(experimentRun.Status),
+                experimentRun.NumberOfCpuCoresRequested
+            );
+        }
+        catch (Exception e)
+        {
+            return Result.Failure<SignalGeneratorExperimentRun>(e.Message);
+        }
     }
     
     public class SignalGeneratorExperimentRunDto
