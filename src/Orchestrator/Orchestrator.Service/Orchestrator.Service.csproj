@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <Content Include="..\..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\HPO\HyperparameterOptimization.Client\HyperparameterOptimization.Client.csproj" />
+      <ProjectReference Include="..\Orchestrator.Infrastructure.Kubernetes\Orchestrator.Infrastructure.Kubernetes.csproj" />
+      <ProjectReference Include="..\Orchestrator.Infrastructure\Orchestrator.Infrastructure.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="NSubstitute" Version="5.3.0" />
+    </ItemGroup>
+    
+</Project>

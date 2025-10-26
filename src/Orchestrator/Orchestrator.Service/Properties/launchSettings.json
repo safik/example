@@ -1,0 +1,26 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "local": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5041",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__Default": "Server=192.168.0.201;Port=31608;Database=dev;Username=root;Password=root",
+        "Infrastructure__TrialsHPO__Http__Enabled": "true",
+        "Infrastructure__TrialsHPO__Http__Host": "https://localhost:7261",
+        "SignalGeneratorsEnvVars__Values__0": "Feed__Host=https://quotes-gateway.domain.svc.cluster.local",
+        "SignalGeneratorsEnvVars__Values__1": "Infrastructure__TrialEvents__RisingWave__Enabled=true",
+        "SignalGeneratorsEnvVars__Values__2": "Infrastructure__TrialEvents__RisingWave__ConnectionStrings__Prediction=Server=risingwave.risingwave.svc.cluster.local;Port=4567;Database=dev;Username=root;Password=root",
+        "SignalGeneratorsEnvVars__Values__3": "Infrastructure__OrderEvents__RisingWave__Enabled=true",
+        "SignalGeneratorsEnvVars__Values__4": "Infrastructure__OrderEvents__RisingWave__ConnectionStrings__Prediction=Server=risingwave.risingwave.svc.cluster.local;Port=4567;Database=dev;Username=root;Password=root",
+        "SignalGeneratorsEnvVars__Values__5": "Infrastructure__ModelRegistry__Minio__Enabled=true",
+        "SignalGeneratorsEnvVars__Values__6": "Infrastructure__ModelRegistry__Minio__Host=http://minio-service.minio.svc.cluster.local:9000",
+        "SignalGeneratorsEnvVars__Values__7": "Infrastructure__ModelRegistry__Minio__AccessKey=minio",
+        "SignalGeneratorsEnvVars__Values__8": "Infrastructure__ModelRegistry__Minio__SecretKey=minio123"
+      }
+    }
+  }
+}
